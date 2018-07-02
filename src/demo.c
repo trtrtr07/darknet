@@ -8,6 +8,7 @@
 #include "image.h"
 #include "demo.h"
 #include <sys/time.h>
+#include "MQTTClient.h"
 
 #define DEMO 1
 
