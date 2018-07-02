@@ -36,6 +36,12 @@ static int demo_done = 0;
 static int demo_total = 0;
 double demo_time;
 
+
+MQTTClient client;
+MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+int rc;
+
+
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
 int size_network(network *net)
@@ -196,6 +202,21 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     set_batch_network(net, 1);
     pthread_t detect_thread;
     pthread_t fetch_thread;
+
+
+    //initialize mqtt variable
+    MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
+      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+    conn_opts.keepAliveInterval = 20;
+    conn_opts.cleansession = 1;
+
+    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    {
+        printf("Failed to connect, return code %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
+
 
     srand(2222222);
 

@@ -2,7 +2,6 @@
 #include "utils.h"
 #include "blas.h"
 #include "cuda.h"
-#include "MQTTClient.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -15,6 +14,8 @@
  * MQTT VARIABLES    
 */
 
+#include "MQTTClient.h"
+
 #define ADDRESS     "tcp://localhost:1883"
 #define CLIENTID    "ExampleClientPub"
 #define TOPIC       "/darknet"
@@ -22,22 +23,10 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
-MQTTClient client;
-MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+extern MQTTClient mqtt_client;
+
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
-int rc;
-
-MQTTClient_create(&client, ADDRESS, CLIENTID,
-    MQTTCLIENT_PERSISTENCE_NONE, NULL);
-conn_opts.keepAliveInterval = 20;
-conn_opts.cleansession = 1;
-
-if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-{
-    printf("Failed to connect, return code %d\n", rc);
-    exit(EXIT_FAILURE);
-}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -343,7 +332,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     pubmsg.payloadlen = (int)strlen(PAYLOAD);
     pubmsg.qos = QOS;
     pubmsg.retained = 0;
-    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+    MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
     
 
 }
