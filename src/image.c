@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "blas.h"
 #include "cuda.h"
+#include "MQTTClient.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -9,6 +10,38 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+
+/*
+ * MQTT VARIABLES    
+*/
+
+#define ADDRESS     "tcp://localhost:1883"
+#define CLIENTID    "ExampleClientPub"
+#define TOPIC       "/darknet"
+#define PAYLOAD     "Hello World!"
+#define QOS         1
+#define TIMEOUT     10000L
+
+MQTTClient client;
+MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+MQTTClient_message pubmsg = MQTTClient_message_initializer;
+MQTTClient_deliveryToken token;
+int rc;
+
+MQTTClient_create(&client, ADDRESS, CLIENTID,
+    MQTTCLIENT_PERSISTENCE_NONE, NULL);
+conn_opts.keepAliveInterval = 20;
+conn_opts.cleansession = 1;
+
+if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+{
+    printf("Failed to connect, return code %d\n", rc);
+    exit(EXIT_FAILURE);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
 
 int windows = 0;
 
@@ -242,11 +275,14 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
+        //char jsonoutput[4096] = {0};
+        //strcat(jsonoutput, "[{\"labels\":[")
         int class = -1;
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j] > thresh){
                 if (class < 0) {
                     strcat(labelstr, names[j]);
+        //            strcat(jsonoutput, names[j])
                     class = j;
                 } else {
                     strcat(labelstr, ", ");
@@ -257,13 +293,6 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
         if(class >= 0){
             int width = im.h * .006;
-
-            /*
-               if(0){
-               width = pow(prob, 1./2.)*10+1;
-               alphabet = 0;
-               }
-             */
 
             //printf("%d %s: %.0f%%\n", i, names[class], prob*100);
             int offset = class*123457 % classes;
@@ -307,6 +336,16 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
         }
     }
+
+    //publish json string to mqtt here
+    //TODO
+    pubmsg.payload = PAYLOAD;
+    pubmsg.payloadlen = (int)strlen(PAYLOAD);
+    pubmsg.qos = QOS;
+    pubmsg.retained = 0;
+    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+    
+
 }
 
 void transpose_image(image im)
