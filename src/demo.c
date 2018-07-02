@@ -37,7 +37,8 @@ static int demo_total = 0;
 double demo_time;
 
 
-MQTTClient mqtt_client;
+//MQTTClient mqtt_client;
+extern MQTTClient mqtt_client;
 MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 int rc;
 

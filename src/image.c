@@ -24,7 +24,7 @@
 #define TIMEOUT     10000L
 
 //extern MQTTClient mqtt_client;
-
+MQTTClient mqtt_client;
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
@@ -261,7 +261,6 @@ image **load_alphabet()
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
 {
     int i,j;
-    extern MQTTClient mqtt_client;
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         //char jsonoutput[4096] = {0};
