@@ -23,8 +23,8 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
-//extern MQTTClient mqtt_client;
-MQTTClient mqtt_client;
+extern MQTTClient mqtt_client;
+// MQTTClient mqtt_client;
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
@@ -261,17 +261,17 @@ image **load_alphabet()
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
 {
     int i,j;
-    MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
-      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
+    //   MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
+    // conn_opts.keepAliveInterval = 20;
+    // conn_opts.cleansession = 1;
 
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(EXIT_FAILURE);
-    }
+    // if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    // {
+    //     printf("Failed to connect, return code %d\n", rc);
+    //     exit(EXIT_FAILURE);
+    // }
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         //char jsonoutput[4096] = {0};
