@@ -269,7 +269,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
 
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    if ((rc = MQTTClient_connect(mqtt_client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
         printf("Failed to connect, return code %d\n", rc);
         exit(EXIT_FAILURE);
