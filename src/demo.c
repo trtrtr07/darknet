@@ -39,7 +39,11 @@ static CvVideoWriter * writer = 0;
 
 
 
-
+static float get_pixel(image m, int x, int y, int c) {
+    assert(x < m.w && y < m.h && c < m.c);
+    return m.data[c*m.h*m.w + y*m.w + x];
+    ///return get_pixel(m, x, y, c);
+}
 
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
