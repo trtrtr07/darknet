@@ -293,11 +293,14 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
                 } else {
                     strcat(labelstr, ", ");
                     strcat(labelstr, names[j]);
+                    strcat(jsonoutput, ", ");
+                    strcat(jsonoutput, names[j]);
                 }
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
             }
         }
         strcat(jsonoutput, "]");
+        printf("json output : %s\n", jsonoutput);
         if(class >= 0){
             int width = im.h * .006;
 
