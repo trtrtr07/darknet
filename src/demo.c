@@ -250,7 +250,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     set_batch_network(net, 1);
     pthread_t detect_thread;
     pthread_t fetch_thread;
-    char *voutput = "video.h264"
+    char *voutput = "video.h264";
 
 
     //initialize mqtt variable
