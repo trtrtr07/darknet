@@ -219,8 +219,11 @@ void dowrite(image im, const char * voutput)
             //CV_FOURCC('I', '2', '6', '3')
         }
         fourcc = VideoWriter_fourcc('U', '2', '6', '3');
-        xsize.width = im.w;
-        xsize.height = im.h;
+        // xsize.width = im.w;
+        // xsize.height = im.h;
+        xsize.width = 176;
+        xsize.height = 144;
+        
         writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
         if(!writer)
         {
