@@ -272,7 +272,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     while(!demo_done){
         buff_index = (buff_index + 1) %3;
         if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
-        if(pthread_create(&detect_thread, 0, detect_in_thread, 0)) error("Thread creation failed");
+        if(pthread_create(&detect_thread, 0, detect_in_thread, (void *)&enable_mqtt)) error("Thread creation failed");
         if(!prefix){
             fps = 1./(what_time_is_it_now() - demo_time);
             demo_time = what_time_is_it_now();
@@ -283,7 +283,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             save_image(buff[(buff_index + 1)%3], name);
         }
         pthread_join(fetch_thread, 0);
-        pthread_join(detect_thread, &enable_mqtt);
+        pthread_join(detect_thread, 0);
         ++count;
     }
 }
