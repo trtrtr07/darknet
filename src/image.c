@@ -280,7 +280,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         char jsonoutput[4096] = {0};
-        strcat(jsonoutput, "[{\"labels\":[")
+        strcat(jsonoutput, "[{\"labels\":[");
         int class = -1;
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j] > thresh){
