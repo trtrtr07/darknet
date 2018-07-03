@@ -307,7 +307,7 @@ void dowrite(image im, const char * voutput)
     //     cvReleaseImage(&disp);
     //     free_image(copy);
 
-    }
+    //}
 }
 
 void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt)
