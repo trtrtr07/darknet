@@ -90,11 +90,15 @@ void *detect_in_thread(void *ptr)
 {
     running = 1;
     float nms = .4;
+    int enable_mqtt = 0;
 
     layer l = net->layers[net->n-1];
     float *X = buff_letter[(buff_index+2)%3].data;
     network_predict(net, X);
-
+    if(ptr) {
+        enable_mqtt = *((int*)ptr);
+    }
+    
     /*
        if(l.type == DETECTION){
        get_detection_boxes(l, 1, 1, demo_thresh, probs, boxes, 0);
@@ -279,7 +283,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             save_image(buff[(buff_index + 1)%3], name);
         }
         pthread_join(fetch_thread, 0);
-        pthread_join(detect_thread, 0);
+        pthread_join(detect_thread, &enable_mqtt);
         ++count;
     }
 }
