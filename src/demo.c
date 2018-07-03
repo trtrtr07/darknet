@@ -333,7 +333,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
         if(voutput) {
-            dowrite((buff_index + 1)%3, voutput);
+            dowrite(buff[(buff_index + 1)%3], voutput);
         }
         ++count;
     }
