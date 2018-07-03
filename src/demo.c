@@ -133,8 +133,7 @@ void *detect_in_thread(void *ptr)
     printf("\nFPS:%.1f\n",fps);
     printf("Objects:\n\n");
     image display = buff[(buff_index+2) % 3];
-    printf("Mqtt enabled : %d", enable_mqtt);
-    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
+    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt);
     free_detections(dets, nboxes);
 
     demo_index = (demo_index + 1)%demo_frame;

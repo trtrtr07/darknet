@@ -260,7 +260,7 @@ image **load_alphabet()
     return alphabets;
 }
 
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
+void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt)
 {
     int i,j;
     MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
@@ -274,6 +274,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         printf("Failed to connect, return code %d\n", rc);
         exit(EXIT_FAILURE);
     }
+
+    printf("Mqtt enabled: %d", enable_mqtt);
 
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
