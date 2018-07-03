@@ -8,7 +8,6 @@
 #include "image.h"
 #include "demo.h"
 #include <sys/time.h>
-#include "MQTTClient.h"
 
 #define DEMO 1
 
@@ -38,10 +37,6 @@ static int demo_total = 0;
 double demo_time;
 
 
-MQTTClient mqtt_client;
-
-MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-int rc;
 
 
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
@@ -138,7 +133,8 @@ void *detect_in_thread(void *ptr)
     printf("\nFPS:%.1f\n",fps);
     printf("Objects:\n\n");
     image display = buff[(buff_index+2) % 3];
-    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, mqtt_client);
+    printf("Mqtt enabled : %d", enable_mqtt);
+    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
     free_detections(dets, nboxes);
 
     demo_index = (demo_index + 1)%demo_frame;
@@ -190,7 +186,7 @@ void *detect_loop(void *ptr)
     }
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -207,17 +203,17 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
 
 
     //initialize mqtt variable
-    MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
-      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
+    //   MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
+    // conn_opts.keepAliveInterval = 20;
+    // conn_opts.cleansession = 1;
 
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(EXIT_FAILURE);
-    }
+    // if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    // {
+    //     printf("Failed to connect, return code %d\n", rc);
+    //     exit(EXIT_FAILURE);
+    // }
 
 
     srand(2222222);
