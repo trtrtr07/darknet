@@ -224,7 +224,7 @@ void dowrite(image im, const char * voutput)
         xsize.width = 176;
         xsize.height = 144;
         
-        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
+        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,1);
         if(!writer)
         {
             fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
@@ -363,14 +363,14 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
         if(voutput) {
-            dowrite(buff[(buff_index + 1)%3], voutput);
+            //dowrite(buff[(buff_index + 1)%3], voutput);
         }
         ++count;
     }
 
     if(writer) {
         printf("Releasing video");
-        cvReleaseVideoWriter(&writer);
+    //    cvReleaseVideoWriter(&writer);
         writer = 0;
     }
 
