@@ -226,17 +226,34 @@ void dowrite(image im, const char * voutput)
 
     // sloooooow
     {
-        if(im.c == 3) rgbgr_image(im);
-        int step = ipl->widthStep;
-        int x, y, k;
+        image copy = copy_image(im);
+        if(im.c == 3) rgbgr_image(copy);
+        int x,y,k;
+
+        IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+        int step = disp->widthStep;
         for(y = 0; y < im.h; ++y){
             for(x = 0; x < im.w; ++x){
                 for(k= 0; k < im.c; ++k){
-                    ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
+                    disp->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
                 }
             }
         }
-        cvWriteFrame(writer,ipl);
+        
+        // if(im.c == 3) rgbgr_image(im);
+        // int step = ipl->widthStep;
+        // int x, y, k;
+        // for(y = 0; y < im.h; ++y){
+        //     for(x = 0; x < im.w; ++x){
+        //         for(k= 0; k < im.c; ++k){
+        //             ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
+        //         }
+        //     }
+        // }
+        cvWriteFrame(writer, disp);
+        cvReleaseImage(&disp);
+        free_image(copy);
+
     }
 }
 
