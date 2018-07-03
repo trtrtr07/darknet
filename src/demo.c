@@ -205,63 +205,107 @@ static int VideoWriter_fourcc(char c1, char c2, char c3, char c4)
 
 void dowrite(image im, const char * voutput)
 {
-    if(!writer)
-    {
-        const char * rf = strchr(voutput,':');
-        int fourcc = 0;
-        CvSize xsize;
-        if(rf)
-        {
-            printf("hell\n");
-            voutput = rf+1;
-            fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
-            //CV_FOURCC('M','J','P','G')
-            //CV_FOURCC('I', '2', '6', '3')
-        }
-        fourcc = VideoWriter_fourcc('U', '2', '6', '3');
-        // xsize.width = im.w;
-        // xsize.height = im.h;
-        xsize.width = 176;
-        xsize.height = 144;
-        
-        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,1);
-        if(!writer)
-        {
-            fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
-            exit(1);
-        }
-    }
 
-    // sloooooow
-    {
-        image copy = copy_image(im);
-        if(im.c == 3) rgbgr_image(copy);
-        int x,y,k;
 
-        IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
-        int step = disp->widthStep;
-        for(y = 0; y < im.h; ++y){
-            for(x = 0; x < im.w; ++x){
-                for(k= 0; k < im.c; ++k){
-                    disp->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
-                }
+
+
+/////////////////////////
+
+    int x,y,k;
+    image copy = copy_image(im);
+    constrain_image(copy);
+    if(im.c == 3) rgbgr_image(copy);
+    //normalize_image(copy);
+
+    
+    IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+    int step = disp->widthStep;
+    
+    for(y = 0; y < im.h; ++y){
+        for(x = 0; x < im.w; ++x){
+            for(k= 0; k < im.c; ++k){
+                disp->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
             }
         }
+    }
+    free_image(copy);
+
+
+    {
+        CvSize size;
+        size.width = disp->width;
+        size.height = disp->height;
+
+        if (!writer)
+        {
+          printf("\n SRC output_video = %p \n", writer);
+          const char* output_name = "test_dnn_out.avi";
+          writer = cvCreateVideoWriter(output_name, CV_FOURCC('D', 'I', 'V', 'X'), 25, size, 1);
+          printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
+          
+        }
+
+        cvWriteFrame(writer, disp);
+    }    
+  /////////////////
+
+    // if(!writer)
+    // {
+    //     const char * rf = strchr(voutput,':');
+    //     int fourcc = 0;
+    //     CvSize xsize;
+    //     if(rf)
+    //     {
+    //         printf("hell\n");
+    //         voutput = rf+1;
+    //         fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
+    //         //CV_FOURCC('M','J','P','G')
+    //         //CV_FOURCC('I', '2', '6', '3')
+    //     }
+    //     fourcc = VideoWriter_fourcc('U', '2', '6', '3');
+    //     // xsize.width = im.w;
+    //     // xsize.height = im.h;
+    //     // xsize.width = 176;
+    //     // xsize.height = 144;
         
-        // if(im.c == 3) rgbgr_image(im);
-        // int step = ipl->widthStep;
-        // int x, y, k;
-        // for(y = 0; y < im.h; ++y){
-        //     for(x = 0; x < im.w; ++x){
-        //         for(k= 0; k < im.c; ++k){
-        //             ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
-        //         }
-        //     }
-        // }
-        printf("writing frame");
-        printf("%d \n", cvWriteFrame(writer, disp));
-        cvReleaseImage(&disp);
-        free_image(copy);
+    //     writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,1);
+    //     if(!writer)
+    //     {
+    //         fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
+    //         exit(1);
+    //     }
+    // }
+
+    // // sloooooow
+    // {
+    //     image copy = copy_image(im);
+    //     if(im.c == 3) rgbgr_image(copy);
+    //     int x,y,k;
+
+    //     IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+    //     int step = disp->widthStep;
+    //     for(y = 0; y < im.h; ++y){
+    //         for(x = 0; x < im.w; ++x){
+    //             for(k= 0; k < im.c; ++k){
+    //                 disp->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
+    //             }
+    //         }
+    //     }
+        
+    //     // if(im.c == 3) rgbgr_image(im);
+    //     // int step = ipl->widthStep;
+    //     // int x, y, k;
+    //     // for(y = 0; y < im.h; ++y){
+    //     //     for(x = 0; x < im.w; ++x){
+    //     //         for(k= 0; k < im.c; ++k){
+    //     //             ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
+    //     //         }
+    //     //     }
+    //     // }
+    //     printf("writing frame");
+    //     printf("%d \n", cvWriteFrame(writer, disp));
+    //     cvReleaseImage(&disp);
+    //     free_image(copy);
 
     }
 }
@@ -363,14 +407,14 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
         if(voutput) {
-            //dowrite(buff[(buff_index + 1)%3], voutput);
+            dowrite(buff[(buff_index + 1)%3], voutput);
         }
         ++count;
     }
 
     if(writer) {
         printf("Releasing video");
-    //    cvReleaseVideoWriter(&writer);
+        cvReleaseVideoWriter(&writer);
         writer = 0;
     }
 
