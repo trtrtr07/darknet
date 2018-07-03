@@ -336,7 +336,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
             //append coordinates to json output
             //[{"topleft": {"y": 3, "x": 19}, "confidence": 0.0, "label": "tvmonitor", "bottomright": {"y": 55, "x": 78}}
-            sprintf(temp, "\"topleft\": {'y': %d, 'x': %d}, \"bottomright\": {'y': %d, 'x': %d}", top, left, bottom, right);
+            sprintf(temp, "\"topleft\": {'y': %d, 'x': %d}, \"bottomright\": {'y': %d, 'x': %d}", top, left, bot, right);
             strcat(jsonoutput, temp);
 
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
