@@ -256,7 +256,7 @@ void dowrite(image im, const char * voutput)
         //     }
         // }
         printf("writing frame");
-        printf("%d \n", cvWriteToAVI(writer, disp));
+        printf("%d \n", cvWriteFrame(writer, disp));
         cvReleaseImage(&disp);
         free_image(copy);
 
