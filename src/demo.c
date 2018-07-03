@@ -341,6 +341,12 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         }
         ++count;
     }
+
+    if(writer) {
+        cvReleaseVideoWriter(&writer);
+        writer = 0;
+    }
+
 }
 
 /*
