@@ -232,9 +232,9 @@ void dowrite(image im, const char * voutput)
 
         if (!writer)
         {
-          printf("\n SRC output_video = %p \n", writer);
+         // printf("\n SRC output_video = %p \n", writer);
           writer = cvCreateVideoWriter(voutput, CV_FOURCC('D', 'I', 'V', 'X'), 25, size, 1);
-          printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
+         // printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
           
         }
 
