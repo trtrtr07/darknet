@@ -303,7 +303,7 @@ void dowrite(image im, const char * voutput)
     //}
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -317,9 +317,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     set_batch_network(net, 1);
     pthread_t detect_thread;
     pthread_t fetch_thread;
-    char *voutput = "video.avi";
-
-
+    
     //initialize mqtt variable
     // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
     //   MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -406,7 +404,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     }
 
     if(writer) {
-        printf("Releasing video");
+       // printf("Releasing video");
         cvReleaseVideoWriter(&writer);
         writer = 0;
     }
@@ -503,7 +501,7 @@ pthread_join(detect_thread, 0);
 }
 */
 #else
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput)
 {
     fprintf(stderr, "Demo needs OpenCV for webcam images.\n");
 }
