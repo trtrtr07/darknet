@@ -303,8 +303,9 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
             }
         }
-        strcat(jsonoutput, "]");
         if(class >= 0){
+            
+            strcat(jsonoutput, "]");        
             int width = im.h * .006;
 
             //printf("%d %s: %.0f%%\n", i, names[class], prob*100);
