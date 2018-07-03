@@ -216,7 +216,7 @@ void dowrite(image im, const char * voutput)
         }
         xsize.width = im.w;
         xsize.height = im.h;
-        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
+        writer = cvCreateVideoWriter(voutput,CV_FOURCC_DEFAULT,25,xsize,0);
         if(!writer)
         {
             fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
@@ -343,6 +343,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     }
 
     if(writer) {
+        printf("Releasing video");
         cvReleaseVideoWriter(&writer);
         writer = 0;
     }
