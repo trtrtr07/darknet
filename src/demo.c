@@ -214,10 +214,12 @@ void dowrite(image im, const char * voutput)
             printf("hell\n");
             voutput = rf+1;
             fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
+            //CV_FOURCC('M','J','P','G')
         }
+        fourcc = VideoWriter_fourcc('M', 'J', 'P', 'G');
         xsize.width = im.w;
         xsize.height = im.h;
-        writer = cvCreateVideoWriter(voutput,CV_FOURCC_DEFAULT,25,xsize,1);
+        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
         if(!writer)
         {
             fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
@@ -251,6 +253,7 @@ void dowrite(image im, const char * voutput)
         //         }
         //     }
         // }
+        printf("writing frame\n");
         cvWriteFrame(writer, disp);
         cvReleaseImage(&disp);
         free_image(copy);
