@@ -262,7 +262,7 @@ image **load_alphabet()
 
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt)
 {
-    int i,j;
+    int i,j, flag = 0;
     char jsonoutput[4096] = {0};
     char temp[128];
     
@@ -314,16 +314,26 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
         if(class >= 0){
             
+            
+            if(flag == 0) {
+                flag = 1;
+            }
+            else {
+                strcat(jsonoutput, ",");
+            }
+
             strcat(jsonoutput, "{\"label\": ");
             strcat(jsonoutput, "\"");
             strcat(jsonoutput, names[bestclass]);
             strcat(jsonoutput, "\"");
             strcat(jsonoutput, ", ");
 
-            strcat(jsonoutput, "{\"confidence\": ");
+            strcat(jsonoutput, "\"confidence\": ");
             sprintf(temp, "%d", bestprob*100);
             strcat(jsonoutput, temp);
             strcat(jsonoutput, ", ");
+
+            
 
             int width = im.h * .006;
 
