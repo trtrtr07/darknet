@@ -45,6 +45,7 @@ static float get_pixel(image m, int x, int y, int c) {
     ///return get_pixel(m, x, y, c);
 }
 
+
 detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
 
 int size_network(network *net)
@@ -215,8 +216,9 @@ void dowrite(image im, const char * voutput)
             voutput = rf+1;
             fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
             //CV_FOURCC('M','J','P','G')
+            //CV_FOURCC('I', '2', '6', '3')
         }
-        fourcc = VideoWriter_fourcc('M', 'J', 'P', 'G');
+        fourcc = VideoWriter_fourcc('I', '2', '6', '3');
         xsize.width = im.w;
         xsize.height = im.h;
         writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
