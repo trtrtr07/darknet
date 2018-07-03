@@ -38,7 +38,6 @@ static int demo_total = 0;
 double demo_time;
 
 
-//MQTTClient mqtt_client;
 MQTTClient mqtt_client;
 
 MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -139,7 +138,7 @@ void *detect_in_thread(void *ptr)
     printf("\nFPS:%.1f\n",fps);
     printf("Objects:\n\n");
     image display = buff[(buff_index+2) % 3];
-    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
+    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, mqtt_client);
     free_detections(dets, nboxes);
 
     demo_index = (demo_index + 1)%demo_frame;
