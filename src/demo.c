@@ -35,6 +35,8 @@ static float *avg;
 static int demo_done = 0;
 static int demo_total = 0;
 double demo_time;
+static CvVideoWriter * writer = 0;
+
 
 
 
@@ -189,6 +191,51 @@ void *detect_loop(void *ptr)
     }
 }
 
+
+static int VideoWriter_fourcc(char c1, char c2, char c3, char c4)
+{
+    return (c1 & 255) + ((c2 & 255) << 8) + ((c3 & 255) << 16) + ((c4 & 255) << 24);
+}
+
+
+void dowrite(image im, const char * voutput)
+{
+    if(!writer)
+    {
+        const char * rf = strchr(voutput,':');
+        int fourcc = 0;
+        CvSize xsize;
+        if(rf)
+        {
+            voutput = rf+1;
+            fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
+        }
+        xsize.width = im.w;
+        xsize.height = im.h;
+        writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,0);
+        if(!writer)
+        {
+            fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
+            exit(1);
+        }
+    }
+
+    // sloooooow
+    {
+        if(im.c == 3) rgbgr_image(im);
+        int step = ipl->widthStep;
+        int x, y, k;
+        for(y = 0; y < im.h; ++y){
+            for(x = 0; x < im.w; ++x){
+                for(k= 0; k < im.c; ++k){
+                    ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
+                }
+            }
+        }
+        cvWriteFrame(writer,ipl);
+    }
+}
+
 void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt)
 {
     //demo_frame = avg_frames;
@@ -203,6 +250,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     set_batch_network(net, 1);
     pthread_t detect_thread;
     pthread_t fetch_thread;
+    char *voutput = "video.h264"
 
 
     //initialize mqtt variable
@@ -284,6 +332,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         }
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
+        if(voutput) {
+            dowrite((buff_index + 1)%3, voutput);
+        }
         ++count;
     }
 }
