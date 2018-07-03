@@ -211,12 +211,13 @@ void dowrite(image im, const char * voutput)
         CvSize xsize;
         if(rf)
         {
+            printf("hell\n");
             voutput = rf+1;
             fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
         }
         xsize.width = im.w;
         xsize.height = im.h;
-        writer = cvCreateVideoWriter(voutput,CV_FOURCC_DEFAULT,25,xsize,0);
+        writer = cvCreateVideoWriter(voutput,CV_FOURCC_DEFAULT,25,xsize,1);
         if(!writer)
         {
             fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
