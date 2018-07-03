@@ -391,9 +391,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             demo_time = what_time_is_it_now();
             display_in_thread(0);
         }else{
-            char name[256];
-            sprintf(name, "%s_%08d", prefix, count);
-            save_image(buff[(buff_index + 1)%3], name);
+            //char name[256];
+            //sprintf(name, "%s_%08d", prefix, count);
+            //save_image(buff[(buff_index + 1)%3], name);
         }
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);

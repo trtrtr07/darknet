@@ -264,6 +264,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 {
     int i,j;
     char jsonoutput[4096] = {0};
+    char temp[128];
     
     if(enable_mqtt) {
         MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
@@ -305,7 +306,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
         if(class >= 0){
             
-            strcat(jsonoutput, "]");        
+            strcat(jsonoutput, "], ");        
             int width = im.h * .006;
 
             //printf("%d %s: %.0f%%\n", i, names[class], prob*100);
@@ -333,6 +334,11 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             if(top < 0) top = 0;
             if(bot > im.h-1) bot = im.h-1;
 
+            //append coordinates to json output
+            //[{"topleft": {"y": 3, "x": 19}, "confidence": 0.0, "label": "tvmonitor", "bottomright": {"y": 55, "x": 78}}
+            sprintf(temp, "\"topleft\": {'y': %d, 'x': %d}, \"bottomright\": {'y': %d, 'x': %d}", top, left, bottom, right);
+            strcat(jsonoutput, temp);
+
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
             if (alphabet) {
                 image label = get_label(alphabet, labelstr, (im.h*.03));
@@ -350,6 +356,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
             strcat(jsonoutput, "}");
         }
+        strcat(jsonoutput, "]");
     }
 
     //publish json string to mqtt here
