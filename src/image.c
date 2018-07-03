@@ -300,7 +300,6 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
         }
         strcat(jsonoutput, "]");
-        printf("json output : %s\n", jsonoutput);
         if(class >= 0){
             int width = im.h * .006;
 
@@ -350,6 +349,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     //publish json string to mqtt here
     //TODO
     if(enable_mqtt) {
+        printf("json output : %s\n", jsonoutput);
         pubmsg.payload = jsonoutput;
         pubmsg.payloadlen = (int)strlen(PAYLOAD);
         pubmsg.qos = QOS;
