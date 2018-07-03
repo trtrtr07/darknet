@@ -284,21 +284,29 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         int class = -1;
+        int bestclass = 0;
+        float bestprob = 0;
+
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j] > thresh){
+
+                if(bestprob < dets[i].prob[j]) {
+                    bestprob = dets[i].prob[j];
+                    bestclass = j;
+                }
                 if (class < 0) {
                     strcat(labelstr, names[j]);
-                    strcat(jsonoutput, "{\"labels\":[");
-                    strcat(jsonoutput, "\"");
-                    strcat(jsonoutput, names[j]);
-                    strcat(jsonoutput, "\"");
+                    // strcat(jsonoutput, "{\"labels\":[");
+                    // strcat(jsonoutput, "\"");
+                    // strcat(jsonoutput, names[j]);
+                    // strcat(jsonoutput, "\"");
                     class = j;
                 } else {
-                    strcat(labelstr, ", ");
-                    strcat(labelstr, names[j]);
-                    strcat(jsonoutput, ", \"");
-                    strcat(jsonoutput, names[j]);
-                    strcat(jsonoutput, "\"");
+                    // strcat(labelstr, ", ");
+                    // strcat(labelstr, names[j]);
+                    // strcat(jsonoutput, ", \"");
+                    // strcat(jsonoutput, names[j]);
+                    // strcat(jsonoutput, "\"");
                     
                 }
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
@@ -306,7 +314,17 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
         if(class >= 0){
             
-            strcat(jsonoutput, "], ");        
+            strcat(jsonoutput, "{\"label\": ");
+            strcat(jsonoutput, "\"");
+            strcat(jsonoutput, names[bestclass]);
+            strcat(jsonoutput, "\"");
+            strcat(jsonoutput, ", ");
+
+            strcat(jsonoutput, "{\"confidence\": ");
+            fprintf(temp, "%d", bestprob*100);
+            strcat(jsonoutput, temp);
+            strcat(jsonoutput, ", ");
+
             int width = im.h * .006;
 
             //printf("%d %s: %.0f%%\n", i, names[class], prob*100);
@@ -359,7 +377,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         
     }
     strcat(jsonoutput, "]");
-    
+
     //publish json string to mqtt here
     //TODO
     if(enable_mqtt) {
