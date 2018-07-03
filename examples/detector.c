@@ -832,7 +832,7 @@ void run_detector(int argc, char **argv)
     int width = find_int_arg(argc, argv, "-w", 0);
     int height = find_int_arg(argc, argv, "-h", 0);
     int fps = find_int_arg(argc, argv, "-fps", 0);
-    int enable_mqtt = find_arg(argc, argv, "-enable_mqtt")
+    int enable_mqtt = find_arg(argc, argv, "-enable_mqtt");
     //int class = find_int_arg(argc, argv, "-class", 0);
 
     char *datacfg = argv[3];
