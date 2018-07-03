@@ -25,6 +25,7 @@
 #define TIMEOUT     10000L
 
 MQTTClient mqtt_client;
+MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 int rc;
@@ -273,7 +274,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         printf("Failed to connect, return code %d\n", rc);
         exit(EXIT_FAILURE);
     }
-    
+
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         //char jsonoutput[4096] = {0};
