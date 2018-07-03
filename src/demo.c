@@ -206,16 +206,10 @@ static int VideoWriter_fourcc(char c1, char c2, char c3, char c4)
 void dowrite(image im, const char * voutput)
 {
 
-
-
-
-/////////////////////////
-
     int x,y,k;
     image copy = copy_image(im);
     constrain_image(copy);
     if(im.c == 3) rgbgr_image(copy);
-    //normalize_image(copy);
 
     
     IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
@@ -239,8 +233,7 @@ void dowrite(image im, const char * voutput)
         if (!writer)
         {
           printf("\n SRC output_video = %p \n", writer);
-          const char* output_name = "test_dnn_out.avi";
-          writer = cvCreateVideoWriter(output_name, CV_FOURCC('D', 'I', 'V', 'X'), 25, size, 1);
+          writer = cvCreateVideoWriter(voutput, CV_FOURCC('D', 'I', 'V', 'X'), 25, size, 1);
           printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
           
         }
