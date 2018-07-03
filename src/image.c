@@ -279,7 +279,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
     }
         
-    strcat(jsonoutput, "[")
+    strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         strcat(jsonoutput, "{\"labels\":[");
