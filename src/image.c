@@ -356,9 +356,10 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
             strcat(jsonoutput, "}");
         }
-        strcat(jsonoutput, "]");
+        
     }
-
+    strcat(jsonoutput, "]");
+    
     //publish json string to mqtt here
     //TODO
     if(enable_mqtt) {
