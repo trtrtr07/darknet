@@ -282,12 +282,12 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
-        strcat(jsonoutput, "{\"labels\":[");
         int class = -1;
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j] > thresh){
                 if (class < 0) {
                     strcat(labelstr, names[j]);
+                    strcat(jsonoutput, "{\"labels\":[");
                     strcat(jsonoutput, "\"");
                     strcat(jsonoutput, names[j]);
                     strcat(jsonoutput, "\"");
