@@ -347,7 +347,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     pubmsg.retained = 0;
     MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
     rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
-    MQTTClient_disconnect(client, 10);
+    MQTTClient_disconnect(mqtt_client, 10);
     
 
 }
