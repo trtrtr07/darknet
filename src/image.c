@@ -263,30 +263,30 @@ image **load_alphabet()
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt)
 {
     int i,j;
-    MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
-      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    if(enable_mqtt) {
+        MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
+        MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
+        conn_opts.keepAliveInterval = 20;
+        conn_opts.cleansession = 1;
 
-    if ((rc = MQTTClient_connect(mqtt_client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(EXIT_FAILURE);
+        if ((rc = MQTTClient_connect(mqtt_client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+        {
+            printf("Failed to connect, return code %d\n", rc);
+            exit(EXIT_FAILURE);
+        }
     }
-
-    printf("Mqtt enabled: %d", enable_mqtt);
 
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
-        //char jsonoutput[4096] = {0};
-        //strcat(jsonoutput, "[{\"labels\":[")
+        char jsonoutput[4096] = {0};
+        strcat(jsonoutput, "[{\"labels\":[")
         int class = -1;
         for(j = 0; j < classes; ++j){
             if (dets[i].prob[j] > thresh){
                 if (class < 0) {
                     strcat(labelstr, names[j]);
-        //            strcat(jsonoutput, names[j])
+                    strcat(jsonoutput, names[j])
                     class = j;
                 } else {
                     strcat(labelstr, ", ");
@@ -295,6 +295,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
             }
         }
+        strcat(jsonoutput, "]")
         if(class >= 0){
             int width = im.h * .006;
 
@@ -343,14 +344,15 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
     //publish json string to mqtt here
     //TODO
-    pubmsg.payload = PAYLOAD;
-    pubmsg.payloadlen = (int)strlen(PAYLOAD);
-    pubmsg.qos = QOS;
-    pubmsg.retained = 0;
-    MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
-    rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
-    MQTTClient_disconnect(mqtt_client, 10);
-    
+    if(enable_mqtt) {
+        pubmsg.payload = jsonoutput;
+        pubmsg.payloadlen = (int)strlen(PAYLOAD);
+        pubmsg.qos = QOS;
+        pubmsg.retained = 0;
+        MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
+        rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
+        MQTTClient_disconnect(mqtt_client, 10);
+    }
 
 }
 
