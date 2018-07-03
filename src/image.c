@@ -263,6 +263,8 @@ image **load_alphabet()
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt)
 {
     int i,j;
+    char jsonoutput[4096] = {0};
+    
     if(enable_mqtt) {
         MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -276,10 +278,10 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
         }
     }
+        
 
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
-        char jsonoutput[4096] = {0};
         strcat(jsonoutput, "[{\"labels\":[");
         int class = -1;
         for(j = 0; j < classes; ++j){
