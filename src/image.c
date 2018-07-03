@@ -321,7 +321,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             strcat(jsonoutput, ", ");
 
             strcat(jsonoutput, "{\"confidence\": ");
-            fprintf(temp, "%d", bestprob*100);
+            sprintf(temp, "%d", bestprob*100);
             strcat(jsonoutput, temp);
             strcat(jsonoutput, ", ");
 
