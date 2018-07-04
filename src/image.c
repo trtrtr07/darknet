@@ -391,7 +391,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     //publish json string to mqtt here
     //TODO
     if(enable_mqtt) {
-        printf("json output : %s\n", jsonoutput);
+        //printf("json output : %s\n", jsonoutput);
         pubmsg.payload = jsonoutput;
         pubmsg.payloadlen = (int)strlen(jsonoutput);
         pubmsg.qos = QOS;
@@ -629,9 +629,11 @@ void rgbgr_image(image im)
 }
 
 #ifdef OPENCV
-void show_image_cv(image p, const char *name, IplImage *disp)
+void show_image_cv(image im, const char *name, IplImage *disp)
 {
     int x,y,k;
+
+    image p = copy_image(im);
     if(p.c == 3) rgbgr_image(p);
     //normalize_image(copy);
 
@@ -663,6 +665,7 @@ void show_image_cv(image p, const char *name, IplImage *disp)
         cvReleaseImage(&buffer);
     }
     cvShowImage(buff, disp);
+    free_image(p);
 }
 #endif
 
