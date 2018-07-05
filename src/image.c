@@ -24,10 +24,14 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
-MQTTClient mqtt_client = NULL;
-MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-MQTTClient_message pubmsg = MQTTClient_message_initializer;
-MQTTClient_deliveryToken token;
+// MQTTClient mqtt_client = NULL;
+// MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+// MQTTClient_message pubmsg = MQTTClient_message_initializer;
+// MQTTClient_deliveryToken token;
+// int rc;
+
+MQTTAsync mqtt_client = NULL;
+MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 int rc;
 
 
@@ -268,15 +272,28 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     
     printf("1: %f\n", what_time_is_it_now());
     if(enable_mqtt && !mqtt_client) {
-        MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
-        MQTTCLIENT_PERSISTENCE_NONE, NULL);
+        // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
+        // MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+        // conn_opts.keepAliveInterval = 20;
+        // conn_opts.cleansession = 1;
+
+        // if ((rc = MQTTClient_connect(mqtt_client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+        // {
+        //     printf("Failed to connect, return code %d\n", rc);
+        //     exit(EXIT_FAILURE);
+        // }
+
+        MQTTAsync_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+        //MQTTAsync_setCallbacks(client, NULL, connlost, NULL, NULL);
 
         conn_opts.keepAliveInterval = 20;
         conn_opts.cleansession = 1;
-
-        if ((rc = MQTTClient_connect(mqtt_client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+        conn_opts.context = mqtt_client;
+        if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
         {
-            printf("Failed to connect, return code %d\n", rc);
+            printf("Failed to start connect, return code %d\n", rc);
             exit(EXIT_FAILURE);
         }
     }
@@ -395,13 +412,35 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     //TODO
     if(enable_mqtt) {
         //printf("json output : %s\n", jsonoutput);
-        pubmsg.payload = jsonoutput;
-        pubmsg.payloadlen = (int)strlen(jsonoutput);
-        pubmsg.qos = QOS;
-        pubmsg.retained = 0;
-        MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
+        // pubmsg.payload = jsonoutput;
+        // pubmsg.payloadlen = (int)strlen(jsonoutput);
+        // pubmsg.qos = QOS;
+        // pubmsg.retained = 0;
+        // MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
         //rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
         //MQTTClient_disconnect(mqtt_client, 10);
+
+        MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
+        MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
+        
+        int rc;
+
+        
+        pubmsg.payload = jsonoutput;
+        pubmsg.payloadlen = strlen(jsonoutput);
+        pubmsg.qos = 1;
+        pubmsg.retained = 0;
+        deliveredtoken = 0;
+
+
+        if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
+        {
+            printf("Failed to start sendMessage, return code %d\n", rc);
+            exit(EXIT_FAILURE);
+        }
+
+
+
     }
     printf("4: %f\n", what_time_is_it_now());
 
