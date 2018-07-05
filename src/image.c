@@ -266,6 +266,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     char jsonoutput[4096] = {0};
     char temp[128];
     
+    printf("1: %f\n", what_time_is_it_now());
     if(enable_mqtt) {
         MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -279,6 +280,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
         }
     }
+    printf("2: %f\n", what_time_is_it_now());
         
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
@@ -388,6 +390,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     }
     strcat(jsonoutput, "]");
 
+    printf("3: %f\n", what_time_is_it_now());
     //publish json string to mqtt here
     //TODO
     if(enable_mqtt) {
@@ -400,6 +403,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
         MQTTClient_disconnect(mqtt_client, 10);
     }
+    printf("4: %f\n", what_time_is_it_now());
 
 }
 
