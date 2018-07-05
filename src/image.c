@@ -49,7 +49,7 @@ void onConnect(void* context, MQTTAsync_successData* response)
 
     printf("Successful connection\n");
     
-    opts.onSuccess = onSend;
+    //opts.onSuccess = onSend;
     opts.context = client;
 
     pubmsg.payload = PAYLOAD;
