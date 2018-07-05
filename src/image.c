@@ -332,7 +332,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
 
         }
-        usleep(5000L);
+        usleep(10000L);
        // exit(EXIT_FAILURE);
     }
     printf("2: %f\n", what_time_is_it_now());
