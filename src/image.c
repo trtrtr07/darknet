@@ -267,7 +267,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     char temp[128];
     
     printf("1: %f\n", what_time_is_it_now());
-    if(enable_mqtt && !MQTTClient) {
+    if(enable_mqtt && !mqtt_client) {
         MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
