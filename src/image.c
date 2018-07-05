@@ -286,14 +286,14 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         //     exit(EXIT_FAILURE);
         // }
 
-        MQTTAsync_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+        MQTTAsync_create(&mqtt_client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
         //MQTTAsync_setCallbacks(client, NULL, connlost, NULL, NULL);
 
         conn_opts.keepAliveInterval = 20;
         conn_opts.cleansession = 1;
         conn_opts.context = mqtt_client;
-        if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
+        if ((rc = MQTTAsync_connect(mqtt_client, &conn_opts)) != MQTTASYNC_SUCCESS)
         {
             printf("Failed to start connect, return code %d\n", rc);
             exit(EXIT_FAILURE);
@@ -435,7 +435,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         deliveredtoken = 0;
 
 
-        if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
+        if ((rc = MQTTAsync_sendMessage(mqtt_client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
         {
             printf("Failed to start sendMessage, return code %d\n", rc);
             exit(EXIT_FAILURE);
