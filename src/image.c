@@ -332,7 +332,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
 
         }
-        usleep(10000L);
+        usleep(2000L);
        // exit(EXIT_FAILURE);
     }
     printf("2: %f\n", what_time_is_it_now());
@@ -458,6 +458,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         //rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
         //MQTTClient_disconnect(mqtt_client, 10);
         while(!connected) {
+            printf("Waiting for mqtt connection to establish");
             usleep(500L);
         }
 
