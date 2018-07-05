@@ -299,6 +299,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             printf("Failed to start connect, return code %d\n", rc);
             exit(EXIT_FAILURE);
         }
+        exit(EXIT_FAILURE);
     }
     printf("2: %f\n", what_time_is_it_now());
         
