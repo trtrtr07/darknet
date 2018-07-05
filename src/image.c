@@ -457,7 +457,9 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         // MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
         //rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
         //MQTTClient_disconnect(mqtt_client, 10);
-        while(!connected);
+        while(!connected) {
+            usleep(500L);
+        }
 
         MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
         MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
