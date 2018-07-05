@@ -56,7 +56,7 @@ void onConnect(void* context, MQTTAsync_successData* response)
     pubmsg.payloadlen = strlen(PAYLOAD);
     pubmsg.qos = QOS;
     pubmsg.retained = 0;
-    deliveredtoken = 0;
+  //  deliveredtoken = 0;
 
     if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
     {
