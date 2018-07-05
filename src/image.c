@@ -42,27 +42,27 @@ int connected = 0;
 void onConnect(void* context, MQTTAsync_successData* response)
 {
     connected = 1;
-    MQTTAsync client = (MQTTAsync)context;
-    MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
-    MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
-    int rc;
+    // MQTTAsync client = (MQTTAsync)context;
+    // MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
+    // MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
+    // int rc;
 
     printf("Successful connection\n");
     
     //opts.onSuccess = onSend;
-    opts.context = client;
+  //   opts.context = client;
 
-    pubmsg.payload = PAYLOAD;
-    pubmsg.payloadlen = strlen(PAYLOAD);
-    pubmsg.qos = QOS;
-    pubmsg.retained = 0;
-  //  deliveredtoken = 0;
+  //   pubmsg.payload = PAYLOAD;
+  //   pubmsg.payloadlen = strlen(PAYLOAD);
+  //   pubmsg.qos = QOS;
+  //   pubmsg.retained = 0;
+  // //  deliveredtoken = 0;
 
-    if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
-    {
-        printf("Failed to start sendMessage, return code %d\n", rc);
-        exit(EXIT_FAILURE);
-    }
+  //   if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
+  //   {
+  //       printf("Failed to start sendMessage, return code %d\n", rc);
+  //       exit(EXIT_FAILURE);
+  //   }
 }
 
 
@@ -332,10 +332,10 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
 
         }
-        usleep(10000L);
+        usleep(5000L);
        // exit(EXIT_FAILURE);
     }
-    //printf("2: %f\n", what_time_is_it_now());
+    printf("2: %f\n", what_time_is_it_now());
         
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
@@ -421,7 +421,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
             //append coordinates to json output
             //[{"topleft": {"y": 3, "x": 19}, "confidence": 0.0, "label": "tvmonitor", "bottomright": {"y": 55, "x": 78}}
-            sprintf(temp, "\"topleft\": {'y': %d, 'x': %d}, \"bottomright\": {'y': %d, 'x': %d}", top, left, bot, right);
+            sprintf(temp, "\"topleft\": {\"y\": %d, \"x\": %d}, \"bottomright\": {\"y\": %d, \"x\": %d}", top, left, bot, right);
             strcat(jsonoutput, temp);
 
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
