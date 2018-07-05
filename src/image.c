@@ -434,7 +434,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         pubmsg.retained = 0;
        // deliveredtoken = 0;
 
-        opts.client=mqtt_client;
+        opts.context=mqtt_client;
 
         if ((rc = MQTTAsync_sendMessage(mqtt_client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
         {
