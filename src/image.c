@@ -325,12 +325,14 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         conn_opts.onSuccess = onConnect;
         conn_opts.context = mqtt_client;
 
-        
+
         if ((rc = MQTTAsync_connect(mqtt_client, &conn_opts)) != MQTTASYNC_SUCCESS)
         {
             printf("Failed to start connect, return code %d\n", rc);
             exit(EXIT_FAILURE);
+
         }
+        usleep(10000L);
        // exit(EXIT_FAILURE);
     }
     //printf("2: %f\n", what_time_is_it_now());
