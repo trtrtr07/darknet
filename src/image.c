@@ -286,6 +286,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         //     exit(EXIT_FAILURE);
         // }
 
+        print("Creating client\n");
         MQTTAsync_create(&mqtt_client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
         //MQTTAsync_setCallbacks(client, NULL, connlost, NULL, NULL);
