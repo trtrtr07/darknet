@@ -24,7 +24,7 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
-MQTTClient mqtt_client;
+MQTTClient mqtt_client = NULL;
 MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
@@ -267,7 +267,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     char temp[128];
     
     printf("1: %f\n", what_time_is_it_now());
-    if(enable_mqtt) {
+    if(enable_mqtt && !MQTTClient) {
         MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
@@ -400,8 +400,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         pubmsg.qos = QOS;
         pubmsg.retained = 0;
         MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
-        rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
-        MQTTClient_disconnect(mqtt_client, 10);
+        //rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
+        //MQTTClient_disconnect(mqtt_client, 10);
     }
     printf("4: %f\n", what_time_is_it_now());
 
