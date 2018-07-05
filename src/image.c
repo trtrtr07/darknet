@@ -16,6 +16,8 @@
 */
 
 #include "MQTTClient.h"
+#include "MQTTAsync.h"
+
 
 #define ADDRESS     "tcp://localhost:1883"
 #define CLIENTID    "ExampleClientPub"
@@ -422,7 +424,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
         MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
         MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
-        
+
         int rc;
 
         
