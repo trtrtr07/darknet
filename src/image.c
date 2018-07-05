@@ -35,6 +35,35 @@
 MQTTAsync mqtt_client = NULL;
 MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 int rc;
+int connected = 0;
+
+
+
+void onConnect(void* context, MQTTAsync_successData* response)
+{
+    connected = 1;
+    MQTTAsync client = (MQTTAsync)context;
+    MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
+    MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
+    int rc;
+
+    printf("Successful connection\n");
+    
+    opts.onSuccess = onSend;
+    opts.context = client;
+
+    pubmsg.payload = PAYLOAD;
+    pubmsg.payloadlen = strlen(PAYLOAD);
+    pubmsg.qos = QOS;
+    pubmsg.retained = 0;
+    deliveredtoken = 0;
+
+    if ((rc = MQTTAsync_sendMessage(client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
+    {
+        printf("Failed to start sendMessage, return code %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
+}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -286,7 +315,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         //     exit(EXIT_FAILURE);
         // }
 
-        printf("Creating client\n");
+        //printf("Creating client\n");
         MQTTAsync_create(&mqtt_client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
         //MQTTAsync_setCallbacks(client, NULL, connlost, NULL, NULL);
@@ -301,7 +330,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
         exit(EXIT_FAILURE);
     }
-    printf("2: %f\n", what_time_is_it_now());
+    //printf("2: %f\n", what_time_is_it_now());
         
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
@@ -423,6 +452,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         // MQTTClient_publishMessage(mqtt_client, TOPIC, &pubmsg, &token);
         //rc = MQTTClient_waitForCompletion(mqtt_client, token, 5);
         //MQTTClient_disconnect(mqtt_client, 10);
+        while(!connected);
 
         MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
         MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
