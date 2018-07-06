@@ -203,10 +203,15 @@ static int VideoWriter_fourcc(char c1, char c2, char c3, char c4)
 }
 
 
-void dowrite(image im, const char * voutput)
+void dowrite(image im, const char * voutput, int fps)
 {
 
     int x,y,k;
+
+    if(!fps) {
+      fps = 25;
+    }
+
     image copy = copy_image(im);
     constrain_image(copy);
     if(im.c == 3) rgbgr_image(copy);
@@ -233,7 +238,7 @@ void dowrite(image im, const char * voutput)
         if (!writer)
         {
          // printf("\n SRC output_video = %p \n", writer);
-          writer = cvCreateVideoWriter(voutput, CV_FOURCC('D', 'I', 'V', 'X'), 25, size, 1);
+          writer = cvCreateVideoWriter(voutput, CV_FOURCC('D', 'I', 'V', 'X'), fps, size, 1);
          // printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
           
         }
@@ -398,7 +403,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
         if(voutput) {
-            dowrite(buff[(buff_index + 1)%3], voutput);
+            dowrite(buff[(buff_index + 1)%3], voutput, frames);
         }
         ++count;
     }
