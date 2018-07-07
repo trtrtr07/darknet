@@ -301,6 +301,9 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     char jsonoutput[4096] = {0};
     char temp[128];
     
+    if(!topic) {
+        topic = TOPIC;
+    }
     //printf("1: %f\n", what_time_is_it_now());
     if(enable_mqtt && !mqtt_client) {
         // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
@@ -338,9 +341,6 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
         }
 
-        if(!topic) {
-            topic = TOPIC;
-        }
         usleep(2000L);
        // exit(EXIT_FAILURE);
     }
