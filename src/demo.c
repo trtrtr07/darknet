@@ -38,6 +38,11 @@ double demo_time;
 static CvVideoWriter * writer = 0;
 
 
+typedef struct thread_args {
+    int enable_mqtt;
+    char *topic;
+} thread_args;
+
 
 static float get_pixel(image m, int x, int y, int c) {
     assert(x < m.w && y < m.h && c < m.c);
@@ -98,14 +103,21 @@ void *detect_in_thread(void *ptr)
     running = 1;
     float nms = .4;
     int enable_mqtt = 0;
+    char *topic = NULL;
 
     layer l = net->layers[net->n-1];
     float *X = buff_letter[(buff_index+2)%3].data;
     network_predict(net, X);
-    if(ptr) {
-        enable_mqtt = *((int*)ptr);
+
+    thread_args *detect_thread_args = (thread_args*)ptr;
+    if(detect_thread_args->enable_mqtt) {
+        enable_mqtt = detect_thread_args->enable_mqtt;
+    }
+    if(detect_thread_args->topic) {
+        topic = detect_thread_args->topic;
     }
     
+    printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
     /*
        if(l.type == DETECTION){
        get_detection_boxes(l, 1, 1, demo_thresh, probs, boxes, 0);
@@ -308,7 +320,7 @@ void dowrite(image im, const char * voutput, int fps)
     //}
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, char *topic)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -323,6 +335,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     pthread_t detect_thread;
     pthread_t fetch_thread;
     
+    thread_args detect_thread_args;
+    detect_thread_args.topic = topic;
+    detect_thread_args.enable_mqtt = enable_mqtt;
     //initialize mqtt variable
     // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
     //   MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -390,7 +405,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     while(!demo_done){
         buff_index = (buff_index + 1) %3;
         if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
-        if(pthread_create(&detect_thread, 0, detect_in_thread, (void *)&enable_mqtt)) error("Thread creation failed");
+        if(pthread_create(&detect_thread, 0, detect_in_thread, (void *)&detect_thread_args)) error("Thread creation failed");
         if(!prefix){
             fps = 1./(what_time_is_it_now() - demo_time);
             demo_time = what_time_is_it_now();
