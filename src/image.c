@@ -319,7 +319,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         char client_id[64] = {0};
         int randomint = rand();
     
-        fprintf(client_id, "%s_%d", CLIENTID, rand_int);
+        fprintf(client_id, "%s_%d", CLIENTID, randomint);
 
         MQTTAsync_create(&mqtt_client, ADDRESS, client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
@@ -346,7 +346,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     }
     //printf("2: %f\n", what_time_is_it_now());
 
-    printf("Topic : %s, enable_mqtt : %d, randomint : %d\n", topic, enable_mqtt, randomint);
+    printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
 
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
