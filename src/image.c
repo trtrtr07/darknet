@@ -20,7 +20,7 @@
 
 
 #define ADDRESS     "tcp://localhost:1883"
-#define CLIENTID    "ExampleClientPub"
+#define CLIENTID    "DarknetClient"
 #define TOPIC       "/darknet"
 #define PAYLOAD     "Hello World!"
 #define QOS         1
@@ -316,7 +316,12 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         // }
 
         //printf("Creating client\n");
-        MQTTAsync_create(&mqtt_client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+        char client_id[64] = {0};
+        int randomint = rand();
+    
+        fprintf(client_id, "%s_%d", CLIENTID, rand_int);
+
+        MQTTAsync_create(&mqtt_client, ADDRESS, client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
         //MQTTAsync_setCallbacks(client, NULL, connlost, NULL, NULL);
 
@@ -332,12 +337,15 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             exit(EXIT_FAILURE);
 
         }
+
+        if(!topic) {
+            topic = TOPIC;
+        }
         usleep(2000L);
        // exit(EXIT_FAILURE);
     }
     //printf("2: %f\n", what_time_is_it_now());
 
-    int randomint = rand();
     printf("Topic : %s, enable_mqtt : %d, randomint : %d\n", topic, enable_mqtt, randomint);
 
     strcat(jsonoutput, "[");
