@@ -319,7 +319,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         char client_id[64] = {0};
         int randomint = rand();
     
-        fprintf(client_id, "%s_%d", CLIENTID, randomint);
+        sprintf(client_id, "%s_%d", CLIENTID, randomint);
 
         MQTTAsync_create(&mqtt_client, ADDRESS, client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 
