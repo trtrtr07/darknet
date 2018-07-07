@@ -117,7 +117,9 @@ void *detect_in_thread(void *ptr)
         topic = detect_thread_args->topic;
     }
     
-    printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
+    //printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
+
+
     /*
        if(l.type == DETECTION){
        get_detection_boxes(l, 1, 1, demo_thresh, probs, boxes, 0);
@@ -156,7 +158,7 @@ void *detect_in_thread(void *ptr)
     printf("\nFPS:%.1f\n",fps);
     printf("Objects:\n\n");
     image display = buff[(buff_index+2) % 3];
-    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt);
+    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt, topic);
     free_detections(dets, nboxes);
 
     demo_index = (demo_index + 1)%demo_frame;

@@ -295,7 +295,7 @@ image **load_alphabet()
     return alphabets;
 }
 
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt)
+void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt, char *topic)
 {
     int i,j, flag = 0;
     char jsonoutput[4096] = {0};
@@ -336,7 +336,10 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
        // exit(EXIT_FAILURE);
     }
     //printf("2: %f\n", what_time_is_it_now());
-        
+
+    int randomint = rand();
+    printf("Topic : %s, enable_mqtt : %d, randomint : %d\n", topic, enable_mqtt, randomint);
+
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
