@@ -339,6 +339,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
 
         if(!topic) {
+            printf("....\n");
             topic = TOPIC;
         }
         usleep(2000L);
