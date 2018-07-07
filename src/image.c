@@ -339,7 +339,6 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         }
 
         if(!topic) {
-            printf("....\n");
             topic = TOPIC;
         }
         usleep(2000L);
@@ -488,7 +487,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
         opts.context=mqtt_client;
 
-        if ((rc = MQTTAsync_sendMessage(mqtt_client, TOPIC, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
+        if ((rc = MQTTAsync_sendMessage(mqtt_client, topic, &pubmsg, &opts)) != MQTTASYNC_SUCCESS)
         {
             printf("Failed to start sendMessage, return code %d\n", rc);
             exit(EXIT_FAILURE);
