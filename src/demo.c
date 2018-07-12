@@ -36,6 +36,7 @@ static int demo_done = 0;
 static int demo_total = 0;
 double demo_time;
 static CvVideoWriter * writer = 0;
+static CvVideoWriter * stream_writer = 0;
 
 
 typedef struct thread_args {
@@ -217,7 +218,7 @@ static int VideoWriter_fourcc(char c1, char c2, char c3, char c4)
 }
 
 
-void dowrite(image im, const char * voutput, int fps)
+void dowrite(image im, const char * voutput, int stream, int fps)
 {
 
     int x,y,k;
@@ -244,11 +245,12 @@ void dowrite(image im, const char * voutput, int fps)
     free_image(copy);
 
 
-    {
-        CvSize size;
-        size.width = disp->width;
-        size.height = disp->height;
+    
+    CvSize size;
+    size.width = disp->width;
+    size.height = disp->height;
 
+    if(voutput) {
         if (!writer)
         {
          // printf("\n SRC output_video = %p \n", writer);
@@ -258,6 +260,15 @@ void dowrite(image im, const char * voutput, int fps)
         }
 
         cvWriteFrame(writer, disp);
+    }
+
+
+    if(stream) {
+        if(!stream_writer) {
+            char *gstreamer_pipeline = "appsrc ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! clockoverlay shaded-background=true font-desc=\"Sans 38\" ! theoraenc ! oggmux ! tcpserversink host=127.0.0.1 port=8080 ";
+            stream_writer = cvCreateVideoWriter(gstreamer_pipeline, 0, fps, size, 1);
+        }
+        cvWriteFrame(stream_writer, disp);
     }    
   /////////////////
 
@@ -322,7 +333,7 @@ void dowrite(image im, const char * voutput, int fps)
     //}
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, char *topic)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, char *topic, int stream)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -419,8 +430,8 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         }
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
-        if(voutput) {
-            dowrite(buff[(buff_index + 1)%3], voutput, frames);
+        if(voutput || stream) {
+            dowrite(buff[(buff_index + 1)%3], voutput, stream, frames);
         }
         ++count;
     }
@@ -523,7 +534,7 @@ pthread_join(detect_thread, 0);
 }
 */
 #else
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, int stream)
 {
     fprintf(stderr, "Demo needs OpenCV for webcam images.\n");
 }
