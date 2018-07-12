@@ -300,7 +300,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     int i,j, flag = 0;
     char jsonoutput[4096] = {0};
     char temp[128];
-    
+    char client_id[64] = {0};
+        
     if(!topic) {
         topic = TOPIC;
     }
@@ -319,7 +320,6 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         // }
 
         //printf("Creating client\n");
-        char client_id[64] = {0};
         int randomint = rand();
     
         sprintf(client_id, "%s_%d", CLIENTID, randomint);
