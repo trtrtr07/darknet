@@ -346,7 +346,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     }
     //printf("2: %f\n", what_time_is_it_now());
 
-    printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
+    printf("Topic : %s, enable_mqtt : %d, clientid : %s\n", topic, enable_mqtt, client_id);
 
     strcat(jsonoutput, "[");
     for(i = 0; i < num; ++i){
