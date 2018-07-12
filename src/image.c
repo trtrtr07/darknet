@@ -320,6 +320,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         // }
 
         //printf("Creating client\n");
+        srand(time(NULL));
         int randomint = rand();
     
         sprintf(client_id, "%s_%d", CLIENTID, randomint);
