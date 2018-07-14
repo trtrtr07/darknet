@@ -222,6 +222,7 @@ void dowrite(image im, const char * voutput, int stream, int fps)
 {
 
     int x,y,k;
+    static int frame_counter = 0;
 
     if(!fps) {
       fps = 25;
@@ -268,7 +269,16 @@ void dowrite(image im, const char * voutput, int stream, int fps)
             char *gstreamer_pipeline = "appsrc ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! clockoverlay shaded-background=true font-desc=\"Sans 28\" ! theoraenc ! oggmux ! tcpserversink host=127.0.0.1 port=8080 ";
             stream_writer = cvCreateVideoWriter(gstreamer_pipeline, 0, fps, size, 1);
         }
+
         cvWriteFrame(stream_writer, disp);
+
+        if(frame_counter%250 == 0) {
+          // release the writer
+          if(stream_writer) {
+            cvReleaseVideoWriter(&writer);
+            stream_writer = 0;
+          }
+        }
     }    
   /////////////////
 
@@ -440,6 +450,10 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
        // printf("Releasing video");
         cvReleaseVideoWriter(&writer);
         writer = 0;
+    }
+    if(stream_writer) {
+      cvReleaseVideoWriter(&writer);
+      stream_writer = 0;
     }
 
 }
