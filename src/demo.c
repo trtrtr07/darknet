@@ -183,9 +183,12 @@ void *detect_in_thread(void *ptr)
     if(detect_thread_args->vpre) {
         vpre = detect_thread_args->vpre;
     }
+    printf("Detect thread fps : %d\n", detect_thread_args->fps);
     if(detect_thread_args->fps) {
         fps = detect_thread_args->fps;
+        printf("yo");
     }
+    exit(-3);
 
     
     //printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
