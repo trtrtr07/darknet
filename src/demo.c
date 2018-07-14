@@ -37,7 +37,7 @@ static int demo_total = 0;
 double demo_time;
 static CvVideoWriter * writer = 0;
 static CvVideoWriter * stream_writer = 0;
-
+static IplImage *disp = 0;
 
 typedef struct thread_args {
     int enable_mqtt;
@@ -228,12 +228,16 @@ void dowrite(image im, const char * voutput, int stream, int fps)
       fps = 25;
     }
 
+    if(!disp) {
+      disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+    }
+
     image copy = copy_image(im);
     constrain_image(copy);
     if(im.c == 3) rgbgr_image(copy);
 
     
-    IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+    
     int step = disp->widthStep;
     
     for(y = 0; y < im.h; ++y){
@@ -281,7 +285,9 @@ void dowrite(image im, const char * voutput, int stream, int fps)
         }
     }
 
-    frame_counter += 1;    
+    frame_counter += 1;
+    //cvReleaseImage(&disp);
+    
   /////////////////
 
     // if(!writer)
