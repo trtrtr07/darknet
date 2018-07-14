@@ -111,9 +111,13 @@ void do_write_vpre(image im, const char * vpre, int fps)
     int x,y,k;
     //static int frame_counter = 1;
 
+    printf("fps : %d\n", fps);
     if(!fps) {
       fps = 25;
+      printf("hh");
+      exit(-1);
     }
+    exit(-1);
 
     if(!disp_vpre) {
       disp_vpre = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
