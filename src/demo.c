@@ -184,7 +184,7 @@ void *detect_in_thread(void *ptr)
         vpre = detect_thread_args->vpre;
     }
     printf("Detect thread fps : %d\n", detect_thread_args->fps);
-    if(detect_thread_args->fps) {
+    if (detect_thread_args->fps) {
         fps = detect_thread_args->fps;
         printf("yo");
     }
@@ -378,7 +378,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     thread_args detect_thread_args;
     detect_thread_args.topic = topic;
     detect_thread_args.enable_mqtt = enable_mqtt;
-    detect_thread_args.fps = fps;
+    detect_thread_args.fps = frames;
     detect_thread_args.vpre = vpre;
     
     srand(2222222);
