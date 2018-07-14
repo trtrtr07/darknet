@@ -222,7 +222,7 @@ void dowrite(image im, const char * voutput, int stream, int fps)
 {
 
     int x,y,k;
-    static int frame_counter = 0;
+    static int frame_counter = 1;
 
     if(!fps) {
       fps = 25;
@@ -279,7 +279,9 @@ void dowrite(image im, const char * voutput, int stream, int fps)
             stream_writer = 0;
           }
         }
-    }    
+    }
+
+    frame_counter += 1;    
   /////////////////
 
     // if(!writer)
