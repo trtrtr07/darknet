@@ -222,7 +222,7 @@ void dowrite(image im, const char * voutput, int stream, int fps)
 {
 
     int x,y,k;
-    static int frame_counter = 1;
+    //static int frame_counter = 1;
 
     if(!fps) {
       fps = 25;
@@ -276,16 +276,16 @@ void dowrite(image im, const char * voutput, int stream, int fps)
 
         cvWriteFrame(stream_writer, disp);
 
-        if(frame_counter%2500 == 0) {
-          // release the writer
-          if(stream_writer) {
-            cvReleaseVideoWriter(&stream_writer);
-            stream_writer = 0;
-          }
-        }
+        // if(frame_counter%2500 == 0) {
+        //   // release the writer
+        //   if(stream_writer) {
+        //     cvReleaseVideoWriter(&stream_writer);
+        //     stream_writer = 0;
+        //   }
+        // }
     }
 
-    frame_counter += 1;
+    //frame_counter += 1;
     //cvReleaseImage(&disp);
     
   /////////////////
