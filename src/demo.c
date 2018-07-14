@@ -37,11 +37,16 @@ static int demo_total = 0;
 double demo_time;
 static CvVideoWriter * writer = 0;
 static CvVideoWriter * stream_writer = 0;
+static CvVideoWriter * vpre_writer = 0;
 static IplImage *disp = 0;
+static IplImage *disp_vpre = 0;
+
 
 typedef struct thread_args {
     int enable_mqtt;
     char *topic;
+    char *vpre;
+    int fps;
 } thread_args;
 
 
@@ -99,12 +104,66 @@ detection *avg_predictions(network *net, int *nboxes)
     return dets;
 }
 
+
+void do_write_vpre(image im, const char * vpre, int fps)
+{
+
+    int x,y,k;
+    //static int frame_counter = 1;
+
+    if(!fps) {
+      fps = 25;
+    }
+
+    if(!disp_vpre) {
+      disp_vpre = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
+    }
+
+    image copy = copy_image(im);
+    constrain_image(copy);
+    if(im.c == 3) rgbgr_image(copy);
+
+    
+    
+    int step = disp_vpre->widthStep;
+    
+    for(y = 0; y < im.h; ++y){
+        for(x = 0; x < im.w; ++x){
+            for(k= 0; k < im.c; ++k){
+                disp_vpre->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
+            }
+        }
+    }
+    free_image(copy);
+
+
+    
+    CvSize size;
+    size.width = disp_vpre->width;
+    size.height = disp_vpre->height;
+
+    
+    if (!writer)
+    {
+         // printf("\n SRC output_video = %p \n", writer);
+      vpre_writer = cvCreateVideoWriter(vpre, CV_FOURCC('D', 'I', 'V', 'X'), fps, size, 1);
+         // printf("\n cvCreateVideoWriter, DST output_viwriterdeo = %p  \n", writer);
+          
+    }
+
+    cvWriteFrame(vpre_writer, disp_vpre);
+      
+}
+
+
 void *detect_in_thread(void *ptr)
 {
     running = 1;
     float nms = .4;
     int enable_mqtt = 0;
     char *topic = NULL;
+    char *vpre = NULL;
+    int fps = 25;
 
     layer l = net->layers[net->n-1];
     float *X = buff_letter[(buff_index+2)%3].data;
@@ -117,6 +176,13 @@ void *detect_in_thread(void *ptr)
     if(detect_thread_args->topic) {
         topic = detect_thread_args->topic;
     }
+    if(detect_thread_args->vpre) {
+        vpre = detect_thread_args->vpre;
+    }
+    if(detect_thread_args->fps) {
+        fps = detect_thread_args->fps;
+    }
+
     
     //printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
 
@@ -159,6 +225,11 @@ void *detect_in_thread(void *ptr)
     printf("\nFPS:%.1f\n",fps);
     printf("Objects:\n\n");
     image display = buff[(buff_index+2) % 3];
+    // write image to vpre_writer
+    if(vpre) {
+        //write it here 
+        do_write_vpre(display, vpre, fps);
+    }
     draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt, topic);
     free_detections(dets, nboxes);
 
@@ -275,83 +346,14 @@ void dowrite(image im, const char * voutput, int stream, int fps)
         }
 
         cvWriteFrame(stream_writer, disp);
-
-        // if(frame_counter%2500 == 0) {
-        //   // release the writer
-        //   if(stream_writer) {
-        //     cvReleaseVideoWriter(&stream_writer);
-        //     stream_writer = 0;
-        //   }
-        // }
-    }
-
-    //frame_counter += 1;
-    //cvReleaseImage(&disp);
-    
-  /////////////////
-
-    // if(!writer)
-    // {
-    //     const char * rf = strchr(voutput,':');
-    //     int fourcc = 0;
-    //     CvSize xsize;
-    //     if(rf)
-    //     {
-    //         printf("hell\n");
-    //         voutput = rf+1;
-    //         fourcc = VideoWriter_fourcc(voutput[0],voutput[1],voutput[2],voutput[3]);
-    //         //CV_FOURCC('M','J','P','G')
-    //         //CV_FOURCC('I', '2', '6', '3')
-    //     }
-    //     fourcc = VideoWriter_fourcc('U', '2', '6', '3');
-    //     // xsize.width = im.w;
-    //     // xsize.height = im.h;
-    //     // xsize.width = 176;
-    //     // xsize.height = 144;
-        
-    //     writer = cvCreateVideoWriter(voutput,fourcc,25,xsize,1);
-    //     if(!writer)
-    //     {
-    //         fprintf(stderr,"cannot save file %s with forucc %d\n",voutput,fourcc);
-    //         exit(1);
-    //     }
-    // }
-
-    // // sloooooow
-    // {
-    //     image copy = copy_image(im);
-    //     if(im.c == 3) rgbgr_image(copy);
-    //     int x,y,k;
-
-    //     IplImage *disp = cvCreateImage(cvSize(im.w,im.h), IPL_DEPTH_8U, im.c);
-    //     int step = disp->widthStep;
-    //     for(y = 0; y < im.h; ++y){
-    //         for(x = 0; x < im.w; ++x){
-    //             for(k= 0; k < im.c; ++k){
-    //                 disp->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(copy,x,y,k)*255);
-    //             }
-    //         }
-    //     }
-        
-    //     // if(im.c == 3) rgbgr_image(im);
-    //     // int step = ipl->widthStep;
-    //     // int x, y, k;
-    //     // for(y = 0; y < im.h; ++y){
-    //     //     for(x = 0; x < im.w; ++x){
-    //     //         for(k= 0; k < im.c; ++k){
-    //     //             ipl->imageData[y*step + x*im.c + k] = (unsigned char)(get_pixel(im,x,y,k)*255);
-    //     //         }
-    //     //     }
-    //     // }
-    //     printf("writing frame");
-    //     printf("%d \n", cvWriteFrame(writer, disp));
-    //     cvReleaseImage(&disp);
-    //     free_image(copy);
-
-    //}
+    }  
+  
 }
 
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, char *topic, int stream)
+
+
+
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg_frames, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, char *topic, int stream, char *vpre)
 {
     //demo_frame = avg_frames;
     image **alphabet = load_alphabet();
@@ -369,21 +371,12 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     thread_args detect_thread_args;
     detect_thread_args.topic = topic;
     detect_thread_args.enable_mqtt = enable_mqtt;
-    //initialize mqtt variable
-    // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
-    //   MQTTCLIENT_PERSISTENCE_NONE, NULL);
-
-    // conn_opts.keepAliveInterval = 20;
-    // conn_opts.cleansession = 1;
-
-    // if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    // {
-    //     printf("Failed to connect, return code %d\n", rc);
-    //     exit(EXIT_FAILURE);
-    // }
-
-
+    detect_thread_args.fps = fps;
+    detect_thread_args.vpre = vpre;
+    
     srand(2222222);
+
+    
 
     int i;
     demo_total = size_network(net);
@@ -556,7 +549,7 @@ pthread_join(detect_thread, 0);
 }
 */
 #else
-void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, int stream)
+void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const char *filename, char **names, int classes, int delay, char *prefix, int avg, float hier, int w, int h, int frames, int fullscreen, int enable_mqtt, char *voutput, int stream, char *vpre)
 {
     fprintf(stderr, "Demo needs OpenCV for webcam images.\n");
 }
