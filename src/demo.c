@@ -275,7 +275,7 @@ void dowrite(image im, const char * voutput, int stream, int fps)
         if(frame_counter%250 == 0) {
           // release the writer
           if(stream_writer) {
-            cvReleaseVideoWriter(&writer);
+            cvReleaseVideoWriter(&stream_writer);
             stream_writer = 0;
           }
         }
@@ -452,7 +452,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         writer = 0;
     }
     if(stream_writer) {
-      cvReleaseVideoWriter(&writer);
+      cvReleaseVideoWriter(&stream_writer);
       stream_writer = 0;
     }
 
