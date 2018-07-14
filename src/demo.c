@@ -143,7 +143,7 @@ void do_write_vpre(image im, const char * vpre, int fps)
     size.height = disp_vpre->height;
 
     
-    if (!writer)
+    if (!vpre_writer)
     {
          // printf("\n SRC output_video = %p \n", writer);
       vpre_writer = cvCreateVideoWriter(vpre, CV_FOURCC('D', 'I', 'V', 'X'), fps, size, 1);
@@ -455,6 +455,10 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     if(stream_writer) {
       cvReleaseVideoWriter(&stream_writer);
       stream_writer = 0;
+    }
+    if(vpre_writer) {
+      cvReleaseVideoWriter(&vpre_writer);
+      vpre_writer = 0;
     }
 
 }
