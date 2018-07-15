@@ -373,6 +373,14 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     detect_thread_args.enable_mqtt = enable_mqtt;
     detect_thread_args.fps = frames;
     detect_thread_args.vpre = vpre;
+
+    int odd_even_flag = 0;
+
+    int fps_dowrite = frames;
+    if(!voutput && stream && vpre) {
+      fps_dowrite = fps_dowrite/2;
+      odd_even_flag = 1;
+    }
     
     srand(2222222);
 
@@ -442,7 +450,14 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
         if(voutput || stream) {
-            dowrite(buff[(buff_index + 1)%3], voutput, stream, frames);
+            if(odd_even_flag) {
+              if(count % 2 == 0) {
+                 dowrite(buff[(buff_index + 1)%3], voutput, stream, fps_dowrite);
+              } 
+            }
+            else {
+              dowrite(buff[(buff_index + 1)%3], voutput, stream, fps_dowrite); 
+            }  
         }
         ++count;
     }
