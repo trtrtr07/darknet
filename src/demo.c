@@ -377,7 +377,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     int odd_even_flag = 0;
 
     int fps_dowrite = frames;
-    if(!voutput && stream && vpre) {
+    if(!voutput && stream && vpre && fps) {
       fps_dowrite = fps_dowrite/2;
       odd_even_flag = 1;
     }
