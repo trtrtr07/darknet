@@ -47,6 +47,7 @@ typedef struct thread_args {
     char *topic;
     char *vpre;
     int fps;
+    int frame_count;
 } thread_args;
 
 
@@ -182,6 +183,8 @@ void *detect_in_thread(void *ptr)
     if (detect_thread_args->fps) {
         fps = detect_thread_args->fps;
     }
+
+    int frame_count = detect_thread_args->frame_count;
   
     
     //printf("Topic : %s, enable_mqtt : %d\n", topic, enable_mqtt);
@@ -230,7 +233,7 @@ void *detect_in_thread(void *ptr)
         //write it here 
         do_write_vpre(display, vpre, fps);
     }
-    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt, topic);
+    draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, enable_mqtt, topic, frame_count);
     free_detections(dets, nboxes);
 
     demo_index = (demo_index + 1)%demo_frame;
@@ -375,8 +378,11 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     detect_thread_args.enable_mqtt = enable_mqtt;
     detect_thread_args.fps = frames;
     detect_thread_args.vpre = vpre;
+    detect_thread_args.frame_count = 0;
 
     int odd_even_flag = 0;
+
+    int frame_count = 0;
 
     int fps_dowrite = frames;
     if(!voutput && stream && vpre && fps) {
@@ -438,20 +444,27 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
 
     while(!demo_done){
         buff_index = (buff_index + 1) %3;
+
+        if(stream) {
+            frame_count = (frame_count + 1) % 5 + 1;
+            detect_thread_args.frame_count = frame_count;
+        }
         if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
         if(pthread_create(&detect_thread, 0, detect_in_thread, (void *)&detect_thread_args)) error("Thread creation failed");
         if(!prefix){
             fps = 1./(what_time_is_it_now() - demo_time);
             demo_time = what_time_is_it_now();
             display_in_thread(0);
-        }else{
-            //char name[256];
-            //sprintf(name, "%s_%08d", prefix, count);
-            save_image(buff[(buff_index + 1)%3], "/usr/local/lib/node_modules/node-red/public/darknet_output");
+        }
+
+        if(stream) {
+            char name[256];
+            sprintf(name, "%s_%d", "/usr/local/lib/node_modules/node-red/public/darknet_output", frame_count);
+            save_image(buff[(buff_index + 1)%3], name);
         }
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
-        if(voutput || stream) {
+        if(voutput) {
             if(odd_even_flag) {
               if(count % 2 == 0) {
                  dowrite(buff[(buff_index + 1)%3], voutput, stream, fps_dowrite);

@@ -295,7 +295,7 @@ image **load_alphabet()
     return alphabets;
 }
 
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt, char *topic)
+void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int enable_mqtt, char *topic, int frame_count)
 {
     int i,j, flag = 0;
     char jsonoutput[4096] = {0};
@@ -305,6 +305,11 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
     if(!topic) {
         topic = TOPIC;
     }
+
+    if(frame_count && !enable_mqtt) {
+        enable_mqtt = 1;
+    }
+
     //printf("1: %f\n", what_time_is_it_now());
     if(enable_mqtt && !mqtt_client) {
         // MQTTClient_create(&mqtt_client, ADDRESS, CLIENTID,
@@ -492,6 +497,25 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
         {
             printf("Failed to start sendMessage, return code %d\n", rc);
             exit(EXIT_FAILURE);
+        }
+
+        if(frame_count) {
+            char temp[64];
+            sprintf(temp, "darknet_output_%d.jpg", frame_count);
+            
+            MQTTAsync_message frame_mqtt_message = MQTTAsync_message_initializer;
+            
+            frame_mqtt_message.payload = temp;
+            frame_mqtt_message.payloadlen = strlen(temp);
+            frame_mqtt_message.qos = 0;
+            frame_mqtt_message.retained = 0;
+
+            if ((rc = MQTTAsync_sendMessage(mqtt_client, "darknet_stream", &frame_mqtt_message, &opts)) != MQTTASYNC_SUCCESS)
+            {
+                printf("Failed to start sendMessage, return code %d\n", rc);
+                exit(EXIT_FAILURE);
+            }
+
         }
 
 

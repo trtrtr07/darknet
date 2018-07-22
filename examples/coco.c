@@ -323,7 +323,7 @@ void test_coco(char *cfgfile, char *weightfile, char *filename, float thresh)
         detection *dets = get_network_boxes(net, 1, 1, thresh, 0, 0, 0, &nboxes);
         if (nms) do_nms_sort(dets, l.side*l.side*l.n, l.classes, nms);
 
-        draw_detections(im, dets, l.side*l.side*l.n, thresh, coco_classes, alphabet, 80, 0, NULL);
+        draw_detections(im, dets, l.side*l.side*l.n, thresh, coco_classes, alphabet, 80, 0, NULL, 0);
         save_image(im, "prediction");
         show_image(im, "predictions");
         free_detections(dets, nboxes);
