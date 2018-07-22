@@ -446,8 +446,11 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         buff_index = (buff_index + 1) %3;
 
         if(stream) {
-            frame_count = (frame_count + 1) % 55 + 1;
-            detect_thread_args.frame_count = frame_count;
+            frame_count = (frame_count + 1) % 100 + 1;
+            if(frame_count%2 == 0)
+              detect_thread_args.frame_count = frame_count;
+            else
+              detect_thread_args.frame_count = 0;
         }
         if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
         if(pthread_create(&detect_thread, 0, detect_in_thread, (void *)&detect_thread_args)) error("Thread creation failed");
@@ -457,7 +460,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             display_in_thread(0);
         }
 
-        if(stream) {
+        if(stream && (frame_count%2 == 0)) {
             char name[256];
             sprintf(name, "%s_%d", "/usr/local/lib/node_modules/node-red/public/darknet_output", frame_count);
             save_image(buff[(buff_index + 1)%3], name);
