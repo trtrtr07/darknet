@@ -447,7 +447,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         }else{
             //char name[256];
             //sprintf(name, "%s_%08d", prefix, count);
-            //save_image(buff[(buff_index + 1)%3], name);
+            save_image(buff[(buff_index + 1)%3], "/usr/local/lib/node_modules/node-red/public/darknet_output");
         }
         pthread_join(fetch_thread, 0);
         pthread_join(detect_thread, 0);
