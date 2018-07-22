@@ -342,7 +342,8 @@ void dowrite(image im, const char * voutput, int stream, int fps)
     if(stream) {
         if(!stream_writer) {
 
-            char *gstreamer_pipeline = "appsrc ! videoconvert ! clockoverlay shaded-background=true font-desc=\"Sans 28\" ! x264enc ! mpegtsmux ! hlssink target-duration=1 playlist-length=12 location=/usr/local/lib/node_modules/node-red/public/segment%0d.ts playlist-location=/usr/local/lib/node_modules/node-red/public/playlist.m3u8 ";
+            //appsrc ! videoconvert ! x264enc tune=fastdecode ! mpegtsmux ! queue ! hlssink target-duration=3 playlist-length=6 
+            char *gstreamer_pipeline = "appsrc ! videoconvert ! x264enc tune=fastdecode ! mpegtsmux ! queue ! hlssink target-duration=2 playlist-length=8 location=/usr/local/lib/node_modules/node-red/public/segment%0d.ts playlist-location=/usr/local/lib/node_modules/node-red/public/playlist.m3u8 ";
             stream_writer = cvCreateVideoWriter(gstreamer_pipeline, 0, fps, size, 1);
         }
 
