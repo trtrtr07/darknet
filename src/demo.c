@@ -446,7 +446,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         buff_index = (buff_index + 1) %3;
 
         if(stream) {
-            frame_count = (frame_count + 1) % 20 + 1;
+            frame_count = (frame_count + 1) % 55 + 1;
             detect_thread_args.frame_count = frame_count;
         }
         if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
