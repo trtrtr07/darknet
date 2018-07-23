@@ -446,8 +446,8 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
         buff_index = (buff_index + 1) %3;
 
         if(stream) {
-            frame_count = (frame_count + 1) % 100 + 1;
-            if(frame_count%2 == 0)
+            frame_count = (frame_count + 1) % 440 + 1;
+            if(frame_count%4 == 0)
               detect_thread_args.frame_count = frame_count;
             else
               detect_thread_args.frame_count = 0;
@@ -460,7 +460,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             display_in_thread(0);
         }
 
-        if(stream && (frame_count%2 == 0)) {
+        if(stream && (frame_count%4 == 0)) {
             char name[256];
             sprintf(name, "%s_%d", "/usr/local/lib/node_modules/node-red/public/darknet_output", frame_count);
             save_image(buff[(buff_index + 1)%3], name);
@@ -477,7 +477,6 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
               dowrite(buff[(buff_index + 1)%3], voutput, stream, fps_dowrite); 
             }  
         }
-        ++count;
     }
 
     if(writer) {
